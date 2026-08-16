@@ -177,7 +177,7 @@ export default function Map({
 
   return (
     <MapContainer
-      center={[6.5244, 3.3792]}
+      center={[-1.396, 36.7521]}
       zoom={12}
       scrollWheelZoom
       className="h-full w-full z-0"
