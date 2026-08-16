@@ -33,10 +33,11 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-1">
           <Link href="/" className={linkClass('/')}>Work</Link>
           <Link href="/history" className={linkClass('/history')}>History</Link>
+          <Link href="/profile" className={linkClass('/profile')}>Profile</Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <span className="text-sm text-slate-300 font-medium">{firstName}</span>
+          <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
           <button
             onClick={handleLogout}
             className="text-sm text-slate-400 hover:text-white transition-colors"
@@ -59,7 +60,7 @@ export default function Header() {
           <Link href="/" className={linkClass('/')} onClick={() => setOpen(false)}>Work</Link>
           <Link href="/history" className={linkClass('/history')} onClick={() => setOpen(false)}>History</Link>
           <div className="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-sm text-slate-300 font-medium">{firstName}</span>
+            <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
             <button
               onClick={() => { setOpen(false); handleLogout(); }}
               className="text-sm text-slate-400 hover:text-white transition-colors"
