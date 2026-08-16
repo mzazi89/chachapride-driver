@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50;
+  }
+}
+
+@layer components {
+  .uber-input {
+    @apply w-full bg-gray-100 rounded-xl px-4 py-3 outline-none transition-all duration-200;
+  }
+  
+  .uber-input:focus {
+    @apply ring-2 ring-black bg-white;
+  }
+  
+  .uber-button {
+    @apply w-full bg-black text-white py-4 rounded-full font-bold text-lg 
+           hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02];
+  }
+  
+  .uber-card {
+    @apply bg-white rounded-3xl shadow-xl p-8 transition-all duration-300;
+  }
+  
+  .uber-card:hover {
+    @apply shadow-2xl;
+  }
+}
+
+/* ---- Driver app (dark theme) ---- */
+.driver-card {
+  @apply bg-slate-800 rounded-2xl border border-slate-700/60 p-5 shadow-lg;
+}
+
+.driver-input {
+  @apply w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 outline-none text-white placeholder-slate-500 transition-all duration-200;
+}
+
+.driver-input:focus {
+  @apply border-emerald-500 ring-1 ring-emerald-500;
+}
+
+.driver-btn-primary {
+  @apply w-full bg-emerald-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-emerald-400 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.driver-btn-secondary {
+  @apply w-full bg-slate-700 text-white font-semibold py-3 rounded-xl hover:bg-slate-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.driver-btn-outline {
+  @apply w-full bg-transparent text-white font-semibold py-3 rounded-xl border border-slate-600 hover:bg-slate-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
