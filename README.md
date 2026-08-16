@@ -39,11 +39,11 @@ JWT_SECRET="<generate with: node -e \"console.log(require('crypto').randomBytes(
 
 > `.env.local` is gitignored — never commit real credentials.
 
-4. Create the tables and seed demo accounts:
+4. Create the tables and provision the owner account (shared database):
 
 ```bash
 node --env-file=.env.local scripts/setup-db.mjs
-node --env-file=.env.local scripts/seed.mjs
+node --env-file=.env.local scripts/setup-owner.mjs   # uses OWNER_EMAIL / OWNER_PASSWORD
 ```
 
 5. Run:
@@ -54,15 +54,10 @@ npm run dev
 
 Open http://localhost:3000
 
-## Demo driver
+## Accounts
 
-| Field    | Value                        |
-| -------- | ---------------------------- |
-| Email    | `driver@chachapride.com`     |
-| Password | `password123`                |
-| Role     | driver (already **approved**) |
-
-Other seeded accounts (password123): `owner@chachapride.com` (owner dashboard) and `demo@chachapride.com` (rider app).
+- **Owner**: logs in with the `OWNER_EMAIL` / `OWNER_PASSWORD` credentials — the owner gets an approved driver profile automatically, so they can drive directly.
+- **Drivers**: sign up here with vehicle details; an owner must approve the account before it can take rides.
 
 ## Driver signup flow
 

@@ -1,23 +1,18 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import {
-  FaSpinner,
-  FaMapMarkerAlt,
-  FaFlagCheckered,
-  FaMoneyBillWave,
-} from 'react-icons/fa';
+import { FaSpinner, FaMapMarkerAlt, FaFlagCheckered } from 'react-icons/fa';
 import { useAuth } from './context/AuthContext';
 import Header from './components/Header';
-import { getRideType } from '../lib/ride-types';
+import { getDefaultRideType } from '../lib/ride-type-labels';
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
 
 const fmtMoney = (n) => `$${Number(n).toFixed(2)}`;
 const rideTypeLabel = (id) => {
-  const t = getRideType(id);
-  return t ? `${t.icon} ${t.type}` : id;
+  const t = getDefaultRideType(id);
+  return t ? `${t.icon} ${t.name}` : id;
 };
 
 export default function WorkPage() {
@@ -26,15 +21,12 @@ export default function WorkPage() {
 
   // driver status/approval from GET /api/driver/me
   const [driverMe, setDriverMe] = useState(null);
-  // active trip from GET /api/driver/rides/mine
+  // active trip from GET /api/driver/rides/mine (auto-dispatched)
   const [trip, setTrip] = useState(null);
-  // ride request queue from GET /api/driver/rides?status=requested
-  const [requests, setRequests] = useState([]);
   // last completed ride (completion screen)
   const [completedRide, setCompletedRide] = useState(null);
 
   const [toggleBusy, setToggleBusy] = useState(false);
-  const [acceptingId, setAcceptingId] = useState(null);
   const [statusBusy, setStatusBusy] = useState(null);
 
   // GPS
@@ -101,36 +93,14 @@ export default function WorkPage() {
     };
   }, [canDrive, approved]);
 
-  // While available (and not on a trip): poll the ride request queue every 8s
+  // GPS reporting: while online (available) report position so dispatch can
+  // match the nearest driver; every 10s idle, every 3s during a trip
   useEffect(() => {
-    if (!canDrive || !approved || !available) return;
-    let cancelled = false;
-
-    const fetchRequests = async () => {
-      try {
-        const res = await fetch('/api/driver/rides?status=requested');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled) setRequests(data.rides || []);
-      } catch {
-        // ignore
-      }
-    };
-
-    fetchRequests();
-    const int = setInterval(fetchRequests, 8000);
-    return () => {
-      cancelled = true;
-      clearInterval(int);
-    };
-  }, [canDrive, approved, available]);
-
-  // GPS reporting while a trip is active (accepted / en_route)
-  useEffect(() => {
-    if (!trip) return;
+    if (!approved || !available) return;
     let cancelled = false;
     let watchId = null;
     let postInt = null;
+    const intervalMs = trip ? 3000 : 10000;
 
     const onSuccess = (pos) => {
       if (cancelled) return;
@@ -167,7 +137,7 @@ export default function WorkPage() {
         } catch {
           // ignore
         }
-      }, 3000);
+      }, intervalMs);
     } else {
       setLocationDenied(true);
     }
@@ -180,7 +150,7 @@ export default function WorkPage() {
       if (postInt) clearInterval(postInt);
       latestPosRef.current = null;
     };
-  }, [trip?.id]);
+  }, [approved, available, trip?.id]);
 
   const toggleAvailability = async () => {
     setToggleBusy(true);
@@ -196,47 +166,10 @@ export default function WorkPage() {
       setDriverMe((prev) =>
         prev ? { ...prev, driver: { ...prev.driver, status: data.status } } : prev
       );
-      if (status === 'offline') setRequests([]);
     } finally {
       setToggleBusy(false);
     }
   };
-
-  const handleAccept = useCallback(
-    async (ride) => {
-      setAcceptingId(ride.id);
-      try {
-        const res = await fetch(`/api/driver/rides/${ride.id}/accept`, { method: 'POST' });
-        if (res.status === 409) {
-          // no longer available — re-fetch queue
-          try {
-            const qres = await fetch('/api/driver/rides?status=requested');
-            if (qres.ok) {
-              const qdata = await qres.json();
-              setRequests(qdata.rides || []);
-            }
-          } catch {
-            // ignore
-          }
-          return;
-        }
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) return;
-        // queue rows carry coords; accept response does not — merge them
-        setTrip({
-          ...data.ride,
-          pickup_lat: ride.pickup_lat,
-          pickup_lng: ride.pickup_lng,
-          destination_lat: ride.destination_lat,
-          destination_lng: ride.destination_lng,
-        });
-        setRequests([]);
-      } finally {
-        setAcceptingId(null);
-      }
-    },
-    []
-  );
 
   const changeStatus = async (next) => {
     if (!trip) return;
@@ -502,53 +435,15 @@ export default function WorkPage() {
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
               Ride requests
             </h2>
-            {requests.length === 0 ? (
-              <div className="driver-card text-center py-12">
-                <p className="text-3xl mb-3">🚗</p>
-                <p className="text-slate-200 font-semibold">No ride requests yet</p>
-                <p className="text-slate-500 text-sm mt-1">
-                  New requests will appear here automatically.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {requests.map((ride) => (
-                  <div key={ride.id} className="driver-card">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 text-sm">
-                          <FaMapMarkerAlt className="text-emerald-400 shrink-0" />
-                          <span className="text-white font-medium truncate">{ride.pickup}</span>
-                          <span className="text-slate-600">→</span>
-                          <FaFlagCheckered className="text-red-400 shrink-0" />
-                          <span className="text-white font-medium truncate">{ride.destination}</span>
-                        </div>
-                        <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
-                          <span className="px-2 py-0.5 rounded-full bg-slate-700/60 border border-slate-600/60">
-                            {rideTypeLabel(ride.ride_type)}
-                          </span>
-                          <span className="flex items-center gap-1 text-slate-500">
-                            <FaMoneyBillWave className="text-emerald-400" />
-                            {fmtMoney(ride.price)}
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleAccept(ride)}
-                        disabled={acceptingId === ride.id}
-                        className="driver-btn-primary !w-auto px-6 py-2.5 text-sm shrink-0 flex items-center gap-2"
-                      >
-                        {acceptingId === ride.id ? (
-                          <FaSpinner className="animate-spin" />
-                        ) : (
-                          'Accept'
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="driver-card text-center py-12">
+              <p className="text-3xl mb-3">🛰️</p>
+              <p className="text-slate-200 font-semibold">Waiting for ride requests</p>
+              <p className="text-slate-500 text-sm mt-2 max-w-sm mx-auto leading-relaxed">
+                When a rider pays, the nearest available driver is matched
+                automatically and the trip appears here. Stay online with
+                location on to get matched.
+              </p>
+            </div>
           </section>
         )}
       </main>

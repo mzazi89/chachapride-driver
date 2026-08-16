@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { FaSpinner, FaRoute, FaWallet, FaCalendarDay } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
-import { getRideType } from '../../lib/ride-types';
+import { getDefaultRideType } from '../../lib/ride-type-labels';
 
 const fmtMoney = (n) => `$${Number(n).toFixed(2)}`;
 const fmtDate = (iso) => {
@@ -19,8 +19,8 @@ const fmtDate = (iso) => {
   });
 };
 const rideTypeLabel = (id) => {
-  const t = getRideType(id);
-  return t ? `${t.icon} ${t.type}` : id;
+  const t = getDefaultRideType(id);
+  return t ? `${t.icon} ${t.name}` : id;
 };
 
 export default function HistoryPage() {

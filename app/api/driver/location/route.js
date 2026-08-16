@@ -26,6 +26,11 @@ export async function POST(request) {
        RETURNING id`,
       [lat, lng, user.id]
     );
+    // keep the driver's own position fresh so auto-dispatch can match them
+    await pool.query(
+      'UPDATE drivers SET lat = $1, lng = $2, location_updated_at = now() WHERE user_id = $3',
+      [lat, lng, user.id]
+    );
     return NextResponse.json({ updated: rows.length });
   } catch (err) {
     console.error('[driver location] database error:', err.message);

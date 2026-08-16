@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:setup": "node --env-file=.env.local scripts/setup-db.mjs",
+    "db:owner": "node --env-file=.env.local scripts/setup-owner.mjs",
     "db:seed": "node --env-file=.env.local scripts/seed.mjs"
   },
   "dependencies": {
