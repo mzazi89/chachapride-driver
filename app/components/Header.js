@@ -33,6 +33,7 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-1">
           <Link href="/" className={linkClass('/')}>Work</Link>
           <Link href="/history" className={linkClass('/history')}>History</Link>
+          <Link href="/settlements" className={linkClass('/settlements')}>Deposits</Link>
           <Link href="/profile" className={linkClass('/profile')}>Profile</Link>
         </nav>
 
@@ -59,6 +60,7 @@ export default function Header() {
         <div className="md:hidden border-t border-slate-800 bg-slate-900 px-4 py-3 flex flex-col gap-1">
           <Link href="/" className={linkClass('/')} onClick={() => setOpen(false)}>Work</Link>
           <Link href="/history" className={linkClass('/history')} onClick={() => setOpen(false)}>History</Link>
+          <Link href="/settlements" className={linkClass('/settlements')} onClick={() => setOpen(false)}>Deposits</Link>
           <div className="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between">
             <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
             <button

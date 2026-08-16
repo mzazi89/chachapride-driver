@@ -31,7 +31,7 @@ export async function POST(request, { params }) {
     try {
       await client.query('BEGIN');
       const { rows } = await client.query(
-        'SELECT id, status FROM rides WHERE id = $1 AND driver_id = $2 FOR UPDATE',
+        'SELECT id, status, payment_method, commission FROM rides WHERE id = $1 AND driver_id = $2 FOR UPDATE',
         [id, user.id]
       );
       const ride = rows[0];
@@ -49,6 +49,13 @@ export async function POST(request, { params }) {
       await client.query('UPDATE rides SET status = $1 WHERE id = $2', [nextStatus, id]);
       if (nextStatus === 'completed') {
         await client.query("UPDATE drivers SET status = 'available' WHERE user_id = $1", [user.id]);
+        // Cash ride: driver must deposit the commission to the owner's account
+        if (ride.payment_method === 'cash' && ride.commission != null) {
+          await client.query(
+            'INSERT INTO cash_settlements (driver_id, ride_id, amount) VALUES ($1, $2, $3)',
+            [user.id, id, ride.commission]
+          );
+        }
       }
       await client.query('COMMIT');
       // The freed driver can now take a waiting ride

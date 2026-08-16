@@ -61,6 +61,26 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Paystack payments + cash commission
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS payment_method TEXT;
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS paystack_reference TEXT;
+ALTER TABLE rides ADD COLUMN IF NOT EXISTS commission NUMERIC(10, 2);
+
+-- Cash ride commissions the driver must deposit to the owner's account
+CREATE TABLE IF NOT EXISTS cash_settlements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  driver_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ride_id UUID NOT NULL REFERENCES rides(id) ON DELETE CASCADE,
+  amount NUMERIC(10, 2) NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  deposited_at TIMESTAMPTZ,
+  verified_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cash_settlements_driver ON cash_settlements (driver_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cash_settlements_status ON cash_settlements (status);
+
 -- Driver live location (used for auto-dispatch)
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
