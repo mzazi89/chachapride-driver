@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
   Marker,
   Polyline,
+  Circle,
   useMap,
   useMapEvents,
 } from 'react-leaflet';
@@ -58,6 +59,22 @@ const userIcon = L.divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
+
+// Follows a moving position (user or driver) and keeps the map centered on it
+function MapFollower({ position, zoom }) {
+  const map = useMap();
+  const lastKey = useRef(null);
+
+  useEffect(() => {
+    if (!position) return;
+    const key = `${position.lat.toFixed(4)},${position.lng.toFixed(4)}`;
+    if (lastKey.current === key) return;
+    lastKey.current = key;
+    map.flyTo([position.lat, position.lng], zoom, { duration: 1.2 });
+  }, [position?.lat, position?.lng, zoom, map]);
+
+  return null;
+}
 
 function RouteLayer({ from, to }) {
   const [route, setRoute] = useState(null);
@@ -155,9 +172,12 @@ export default function Map({
   const [layer, setLayer] = useState('streets');
   const tile = LAYERS[layer];
 
+  // Center the map on the driver while on a trip, otherwise on the user
+  const followPos = driverLocation || (showUser ? userLocation : null);
+
   return (
     <MapContainer
-      center={[1.3521, 103.8198]}
+      center={[6.5244, 3.3792]}
       zoom={12}
       scrollWheelZoom
       className="h-full w-full z-0"
@@ -173,10 +193,18 @@ export default function Map({
         <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon} />
       )}
       {showUser && userLocation && (
-        <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon} />
+        <>
+          <Circle
+            center={[userLocation.lat, userLocation.lng]}
+            radius={userLocation.accuracy || 50}
+            pathOptions={{ color: '#3b82f6', weight: 1, fillColor: '#3b82f6', fillOpacity: 0.08 }}
+          />
+          <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon} />
+        </>
       )}
       <RouteLayer from={pickupCoords} to={destinationCoords} />
       {interactive && <ClickHandler />}
+      <MapFollower position={followPos} zoom={driverLocation ? 14 : 15} />
       <LayerControl layer={layer} onSelect={setLayer} />
     </MapContainer>
   );
