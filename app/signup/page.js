@@ -10,6 +10,7 @@ import {
   FaIdCard,
   FaCar,
   FaHashtag,
+  FaPhone,
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
@@ -22,6 +23,7 @@ export default function SignupPage() {
   const [licenseNumber, setLicenseNumber] = useState('');
   const [vehicleModel, setVehicleModel] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -38,6 +40,7 @@ export default function SignupPage() {
           name,
           email,
           password,
+          phone,
           role: 'driver',
           driverInfo: {
             license_number: licenseNumber,
@@ -148,6 +151,13 @@ export default function SignupPage() {
               onChange={(e) => setPlateNumber(e.target.value)}
               placeholder="Plate number"
               required
+            />
+            <Field
+              icon={FaPhone}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone number (riders will call you)"
             />
 
             <button

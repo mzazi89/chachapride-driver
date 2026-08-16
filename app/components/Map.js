@@ -13,6 +13,24 @@ import 'leaflet/dist/leaflet.css';
 import { useRide } from '../context/RideContext';
 import { reverseGeocode } from '../../lib/geocode';
 
+const LAYERS = {
+  streets: {
+    name: 'Streets',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  satellite: {
+    name: 'Satellite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
+  },
+  terrain: {
+    name: 'Terrain',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
+  },
+};
+
 const pickupIcon = L.divIcon({
   className: '',
   html: '<div style="width:18px;height:18px;background:#22c55e;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',
@@ -98,9 +116,30 @@ function ClickHandler() {
   return null;
 }
 
+function LayerControl({ layer, onSelect }) {
+  return (
+    <div className="absolute top-3 left-3 z-[1000] flex rounded-lg overflow-hidden shadow-md bg-white text-xs border border-gray-200">
+      {Object.entries(LAYERS).map(([key, cfg]) => (
+        <button
+          key={key}
+          onClick={() => onSelect(key)}
+          className={
+            layer === key
+              ? 'px-3 py-1.5 font-semibold bg-gray-900 text-white'
+              : 'px-3 py-1.5 text-gray-600 hover:bg-gray-100 transition'
+          }
+        >
+          {cfg.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /**
  * Interactive map. Reads pickup/destination from RideContext by default;
  * caller can override via props (used by the live trip tracker).
+ * Layer switcher: Streets / Satellite / Terrain.
  */
 export default function Map({
   pickupCoords: pOverride,
@@ -113,6 +152,8 @@ export default function Map({
   const pickupCoords = pOverride ?? ctx.pickupCoords;
   const destinationCoords = dOverride ?? ctx.destinationCoords;
   const { userLocation } = ctx;
+  const [layer, setLayer] = useState('streets');
+  const tile = LAYERS[layer];
 
   return (
     <MapContainer
@@ -121,10 +162,7 @@ export default function Map({
       scrollWheelZoom
       className="h-full w-full z-0"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <TileLayer attribution={tile.attribution} url={tile.url} />
       {pickupCoords && (
         <Marker position={[pickupCoords.lat, pickupCoords.lng]} icon={pickupIcon} />
       )}
@@ -139,6 +177,7 @@ export default function Map({
       )}
       <RouteLayer from={pickupCoords} to={destinationCoords} />
       {interactive && <ClickHandler />}
+      <LayerControl layer={layer} onSelect={setLayer} />
     </MapContainer>
   );
 }

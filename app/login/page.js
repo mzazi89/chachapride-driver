@@ -34,6 +34,14 @@ export default function LoginPage() {
         setError(data.error || `Request failed (HTTP ${res.status})`);
         return;
       }
+      // Owner can operate as a driver: provision their driver profile on login
+      if (data.user?.role === 'owner') {
+        try {
+          await fetch('/api/auth/ensure-driver', { method: 'POST' });
+        } catch {
+          // profile provisioning failure is non-fatal; work screen will show guidance
+        }
+      }
       await refresh();
       router.push('/');
     } catch {

@@ -18,6 +18,7 @@ export async function POST(request) {
   const email = String(body.email ?? '').trim().toLowerCase();
   const password = String(body.password ?? '');
   const role = String(body.role ?? 'rider');
+  const phone = String(body.phone ?? '').trim() || null;
 
   if (!name || name.length < 2) {
     return NextResponse.json({ error: 'Name must be at least 2 characters' }, { status: 400 });
@@ -60,8 +61,8 @@ export async function POST(request) {
       try {
         await client.query('BEGIN');
         const u = await client.query(
-          'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at',
-          [name, email, passwordHash, 'driver']
+          'INSERT INTO users (name, email, password_hash, role, phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, created_at',
+          [name, email, passwordHash, 'driver', phone]
         );
         const d = await client.query(
           'INSERT INTO drivers (user_id, license_number, vehicle_model, plate_number) VALUES ($1, $2, $3, $4) RETURNING id, status, approved',
@@ -82,8 +83,8 @@ export async function POST(request) {
     }
 
     const { rows } = await pool.query(
-      'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at',
-      [name, email, passwordHash, 'rider']
+      'INSERT INTO users (name, email, password_hash, role, phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, created_at',
+      [name, email, passwordHash, 'rider', phone]
     );
 
     await createSession(rows[0].id);

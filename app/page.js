@@ -42,30 +42,31 @@ export default function WorkPage() {
   const [locationDenied, setLocationDenied] = useState(false);
   const latestPosRef = useRef(null);
 
-  const isDriver = !!user && user.role === 'driver';
-  const approved = !!user?.driver?.approved;
+  // Owner can operate as a driver once their profile exists (auto-provisioned on login)
+  const canDrive = !!user && (user.role === 'driver' || (user.role === 'owner' && !!user.driver));
+  const approved = !!user?.driver?.approved || user?.role === 'owner';
   const available = driverMe?.driver?.status === 'available';
 
-  // Guard: not logged in / not a driver -> login
+  // Guard: not logged in / cannot drive -> login
   useEffect(() => {
     if (loading) return;
-    if (!user || user.role !== 'driver') {
+    if (!user || !canDrive) {
       router.replace('/login');
     }
-  }, [loading, user, router]);
+  }, [loading, user, canDrive, router]);
 
   // While awaiting approval, poll /api/auth/me so approval changes are picked up automatically
   useEffect(() => {
-    if (!isDriver || approved) return;
+    if (!canDrive || approved) return;
     const id = setInterval(() => {
       refresh();
     }, 6000);
     return () => clearInterval(id);
-  }, [isDriver, approved, refresh]);
+  }, [canDrive, approved, refresh]);
 
   // Approved driver: poll /api/driver/me + /api/driver/rides/mine every 6s
   useEffect(() => {
-    if (!isDriver || !approved) return;
+    if (!canDrive || !approved) return;
     let cancelled = false;
 
     const fetchMe = async () => {
@@ -98,11 +99,11 @@ export default function WorkPage() {
       clearInterval(meInt);
       clearInterval(mineInt);
     };
-  }, [isDriver, approved]);
+  }, [canDrive, approved]);
 
   // While available (and not on a trip): poll the ride request queue every 8s
   useEffect(() => {
-    if (!isDriver || !approved || !available) return;
+    if (!canDrive || !approved || !available) return;
     let cancelled = false;
 
     const fetchRequests = async () => {
@@ -122,7 +123,7 @@ export default function WorkPage() {
       cancelled = true;
       clearInterval(int);
     };
-  }, [isDriver, approved, available]);
+  }, [canDrive, approved, available]);
 
   // GPS reporting while a trip is active (accepted / en_route)
   useEffect(() => {
@@ -273,7 +274,7 @@ export default function WorkPage() {
   };
 
   // ----- Loading / guard -----
-  if (loading || !user || user.role !== 'driver') {
+  if (loading || !user || !canDrive) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <FaSpinner className="animate-spin text-emerald-400 text-3xl" />
@@ -282,7 +283,7 @@ export default function WorkPage() {
   }
 
   // ----- 1. Awaiting owner approval -----
-  if (user.driver && !user.driver.approved) {
+  if (user.role === 'driver' && user.driver && !user.driver.approved) {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
         <Header />
