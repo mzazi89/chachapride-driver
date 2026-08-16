@@ -52,6 +52,15 @@ CREATE INDEX IF NOT EXISTS idx_rides_user_created ON rides (user_id, created_at 
 CREATE INDEX IF NOT EXISTS idx_rides_status_created ON rides (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_rides_driver_created ON rides (driver_id, created_at DESC);
 
+-- Contact messages from the public contact form
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Driver live location (used for auto-dispatch)
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
