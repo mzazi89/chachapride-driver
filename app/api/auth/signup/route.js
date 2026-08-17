@@ -32,6 +32,12 @@ export async function POST(request) {
   if (!ALLOWED_ROLES.includes(role)) {
     return NextResponse.json({ error: 'Invalid account type' }, { status: 400 });
   }
+  if (role === 'driver' && !phone) {
+    return NextResponse.json(
+      { error: 'Phone number is required — riders call you on this number' },
+      { status: 400 }
+    );
+  }
 
   let driverInfo = null;
   if (role === 'driver') {

@@ -111,3 +111,7 @@
   background: radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.16), rgba(2, 6, 23, 0.97) 60%);
   backdrop-filter: blur(4px);
 }
+
+.driver-btn-outline {
+  @apply w-full border-2 border-emerald-500 text-emerald-400 font-bold py-3.5 rounded-xl hover:bg-emerald-500/10 active:scale-[0.99] transition-all duration-200;
+}
