@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import InstallBanner from './InstallBanner';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -72,6 +73,7 @@ export default function Header() {
           </div>
         </div>
       )}
+      <InstallBanner />
     </header>
   );
 }
