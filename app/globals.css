@@ -2,13 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --brand-blue: #2563eb;
+  --brand-green: #10b981;
+  --brand-purple: #8b5cf6;
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  --brand-gradient-warm: linear-gradient(90deg, #2563eb 0%, #10b981 45%, #8b5cf6 100%);
+}
+
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
-  
+
   body {
-    @apply bg-gray-50;
+    @apply bg-slate-900;
   }
 }
 
@@ -16,22 +24,35 @@
   .uber-input {
     @apply w-full bg-gray-100 rounded-xl px-4 py-3 outline-none transition-all duration-200;
   }
-  
+
   .uber-input:focus {
-    @apply ring-2 ring-black bg-white;
+    @apply ring-2 ring-blue-500 bg-white;
   }
-  
+
   .uber-button {
-    @apply w-full bg-black text-white py-4 rounded-full font-bold text-lg 
-           hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02];
+    @apply w-full text-white py-4 rounded-full font-bold text-lg
+           transition-all duration-200 transform hover:scale-[1.02];
+    background: var(--brand-gradient);
+    box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.5);
   }
-  
+
+  .uber-button:hover {
+    filter: brightness(1.08);
+  }
+
   .uber-card {
     @apply bg-white rounded-3xl shadow-xl p-8 transition-all duration-300;
   }
-  
+
   .uber-card:hover {
     @apply shadow-2xl;
+  }
+
+  .gradient-text {
+    background: var(--brand-gradient-warm);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }
 
@@ -45,35 +66,19 @@
 }
 
 .driver-input:focus {
-  @apply border-emerald-500 ring-1 ring-emerald-500;
+  @apply border-blue-500 ring-1 ring-blue-500;
 }
 
 .driver-btn-primary {
-  @apply w-full bg-emerald-500 text-slate-950 font-bold py-3.5 rounded-xl hover:bg-emerald-400 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply w-full text-white font-bold py-3.5 rounded-xl active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  background: var(--brand-gradient);
+  box-shadow: 0 6px 16px -6px rgba(37, 99, 235, 0.45);
+}
+
+.driver-btn-primary:hover {
+  filter: brightness(1.1);
 }
 
 .driver-btn-secondary {
-  @apply w-full bg-slate-700 text-white font-semibold py-3 rounded-xl hover:bg-slate-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
-}
-
-.driver-btn-outline {
-  @apply w-full bg-transparent text-white font-semibold py-3 rounded-xl border border-slate-600 hover:bg-slate-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  @apply w-full bg-slate-700 text-slate-200 font-bold py-3.5 rounded-xl hover:bg-slate-600 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 }

@@ -27,7 +27,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800">
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="text-xl font-extrabold tracking-tight text-white">
-          chacha<span className="text-emerald-400">ride</span>
+          chacha<span className="gradient-text">ride</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
