@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import { getDefaultRideType } from '../../lib/ride-type-labels';
 
-const fmtMoney = (n) => `$${Number(n).toFixed(2)}`;
+import { fmtKsh as fmtMoney } from '../../lib/format';
 const fmtDate = (iso) => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';

@@ -99,10 +99,10 @@ CREATE TABLE IF NOT EXISTS ride_types (
 );
 
 INSERT INTO ride_types (id, name, icon, base_price, per_km, capacity, description, active) VALUES
-  ('uberx',    'UberX',        '🚗', 5,  1.20, 4, 'Affordable, everyday rides',                TRUE),
-  ('uberxl',   'UberXL',       '🚐', 8,  1.80, 6, 'Rides for groups up to 6',                  TRUE),
-  ('comfort',  'Uber Comfort', '🛻', 10, 2.10, 4, 'Extra legroom, top-rated drivers',          TRUE),
-  ('green',    'Uber Green',   '🌿', 7,  1.50, 4, 'Eco-friendly electric vehicles',            TRUE)
+  ('motorbike',     'Motorbike',     '🏍️', 50, 30, 1, 'Fastest way through traffic', TRUE),
+  ('electric_bike', 'Electric Bike', '⚡', 50, 25, 1, 'Eco-friendly — 5 KSh less per km', TRUE)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, icon = EXCLUDED.icon, base_price = EXCLUDED.base_price,
   per_km = EXCLUDED.per_km, capacity = EXCLUDED.capacity, description = EXCLUDED.description;
+
+DELETE FROM ride_types WHERE id IN ('uberx', 'uberxl', 'comfort', 'green');

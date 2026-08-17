@@ -11,7 +11,7 @@ import {
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
-const fmt = (n) => `$${Number(n).toFixed(2)}`;
+import { fmtKsh as fmt } from '../../lib/format';
 
 const STATUS_PILL = {
   pending: 'bg-amber-500/15 text-amber-400 border-amber-500/30',

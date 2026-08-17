@@ -9,7 +9,7 @@ import { getDefaultRideType } from '../lib/ride-type-labels';
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
 
-const fmtMoney = (n) => `$${Number(n).toFixed(2)}`;
+import { fmtKsh as fmtMoney } from '../lib/format';
 const rideTypeLabel = (id) => {
   const t = getDefaultRideType(id);
   return t ? `${t.icon} ${t.name}` : id;
