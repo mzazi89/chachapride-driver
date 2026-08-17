@@ -720,6 +720,32 @@ export default function WorkPage() {
                 Stay online with location on to receive rings.
               </p>
             </div>
+
+            <div className="mt-6">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                Your live location
+              </h2>
+              {locationDenied && (
+                <div className="mb-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm flex items-start gap-2">
+                  <span>⚠️</span>
+                  <span>
+                    Location is off — you won&apos;t receive ride requests. Turn on location in
+                    browser settings and go online again.
+                  </span>
+                </div>
+              )}
+              <div
+                className="rounded-2xl overflow-hidden border border-slate-700/60 shadow-lg bg-slate-800"
+                style={{ height: 300 }}
+              >
+                <Map driverLocation={position} showUser={false} interactive={false} />
+              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                {position
+                  ? 'Sharing your live location — when a rider nearby requests, your phone rings.'
+                  : 'Waiting for GPS...'}
+              </p>
+            </div>
           </section>
         )}
       </main>
