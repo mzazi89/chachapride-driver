@@ -37,6 +37,7 @@ export default function Header() {
           <Link href="/history" className={linkClass('/history')}>History</Link>
           <Link href="/settlements" className={linkClass('/settlements')}>Deposits</Link>
           <Link href="/profile" className={linkClass('/profile')}>Profile</Link>
+          <Link href="/install" className={linkClass('/install')}>Install</Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
@@ -64,6 +65,7 @@ export default function Header() {
           <Link href="/" className={linkClass('/')} onClick={() => setOpen(false)}>Work</Link>
           <Link href="/history" className={linkClass('/history')} onClick={() => setOpen(false)}>History</Link>
           <Link href="/settlements" className={linkClass('/settlements')} onClick={() => setOpen(false)}>Deposits</Link>
+          <Link href="/install" className={linkClass('/install')} onClick={() => setOpen(false)}>Install</Link>
           <div className="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
             <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
             <div className="flex items-center gap-2">
