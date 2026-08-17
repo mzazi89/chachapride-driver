@@ -571,8 +571,16 @@ export default function WorkPage() {
   // ----- Incoming ride request: full-screen phone ring -----
   if (ringingRide) {
     const r = ringingRide;
+    const rPickup =
+      r.pickup_lat != null && r.pickup_lng != null
+        ? { lat: Number(r.pickup_lat), lng: Number(r.pickup_lng) }
+        : null;
+    const rDestination =
+      r.destination_lat != null && r.destination_lng != null
+        ? { lat: Number(r.destination_lat), lng: Number(r.destination_lng) }
+        : null;
     return (
-      <div className="fixed inset-0 z-50 ring-overlay text-white flex items-center justify-center px-4">
+      <div className="fixed inset-0 z-50 ring-overlay text-white flex items-start sm:items-center justify-center px-4 py-6 overflow-y-auto">
         <div className="w-full max-w-md text-center">
           {ringNotice && (
             <div className="mb-6 p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-sm">
@@ -610,6 +618,26 @@ export default function WorkPage() {
               <span className="text-xl font-extrabold text-emerald-400">{fmtMoney(r.price)}</span>
             </div>
           </div>
+
+          {rPickup && (
+            <div className="mb-8">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                Customer location → destination
+              </p>
+              <div
+                className="rounded-2xl overflow-hidden border border-slate-700/60 shadow-lg bg-slate-800"
+                style={{ height: 220 }}
+              >
+                <Map
+                  pickupCoords={rPickup}
+                  destinationCoords={rDestination}
+                  driverLocation={position}
+                  showUser={false}
+                  interactive={false}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <button
