@@ -17,7 +17,12 @@ export async function POST(request, { params }) {
     );
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error('[driver decline] database error:', err.message);
-    return NextResponse.json({ error: 'Database error.' }, { status: 500 });
+    // If the ride_declines table is not migrated yet, still acknowledge the
+    // decline — the app stops ringing it locally either way.
+    if (!/ride_declines/.test(err.message)) {
+      console.error('[driver decline] database error:', err.message);
+      return NextResponse.json({ error: 'Database error.' }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true });
   }
 }
