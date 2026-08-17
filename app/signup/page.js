@@ -14,6 +14,18 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
+// Defined at module scope so its identity is stable — defining it inside the
+// component would remount the input on every keystroke and lose focus.
+const Field = ({ icon: Icon, ...props }) => (
+  <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all duration-200">
+    <Icon className="text-slate-500 shrink-0" />
+    <input
+      {...props}
+      className="bg-transparent w-full outline-none text-white placeholder-slate-500"
+    />
+  </div>
+);
+
 export default function SignupPage() {
   const router = useRouter();
   const { refresh } = useAuth();
@@ -67,16 +79,6 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
-
-  const Field = ({ icon: Icon, ...props }) => (
-    <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all duration-200">
-      <Icon className="text-slate-500 shrink-0" />
-      <input
-        {...props}
-        className="bg-transparent w-full outline-none text-white placeholder-slate-500"
-      />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-cover bg-center text-white flex items-start sm:items-center justify-center px-4 py-10" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
