@@ -69,7 +69,7 @@ export default function DriverProfilePage() {
 
   if (loading || !driver) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }} style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <Header />
         <main className="max-w-2xl mx-auto px-4 py-16 flex items-center justify-center text-slate-400">
           <FaSpinner className="animate-spin mr-2 text-emerald-400" /> Loading...
@@ -79,7 +79,7 @@ export default function DriverProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }} style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Header />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <h1 className="text-2xl font-extrabold text-white mb-6">My profile</h1>

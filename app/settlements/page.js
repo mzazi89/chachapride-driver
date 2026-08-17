@@ -65,7 +65,7 @@ export default function SettlementsPage() {
 
   if (authLoading || !data) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }} style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <Header />
         <main className="max-w-3xl mx-auto px-4 py-16 flex items-center justify-center text-slate-400">
           <FaSpinner className="animate-spin mr-2 text-emerald-400" /> Loading...
@@ -77,7 +77,7 @@ export default function SettlementsPage() {
   const { settlements, totals } = data;
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }} style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-3 mb-6">

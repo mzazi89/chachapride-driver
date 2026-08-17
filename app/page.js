@@ -209,7 +209,7 @@ export default function WorkPage() {
   // ----- Loading / guard -----
   if (loading || !user || !canDrive) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <FaSpinner className="animate-spin text-emerald-400 text-3xl" />
       </div>
     );
@@ -218,7 +218,7 @@ export default function WorkPage() {
   // ----- 1. Awaiting owner approval -----
   if (user.role === 'driver' && user.driver && !user.driver.approved) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <Header />
         <div className="max-w-md mx-auto px-4 py-12">
           <div className="driver-card text-center">
@@ -258,7 +258,7 @@ export default function WorkPage() {
   // ----- 4. Trip complete -----
   if (completedRide) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <Header />
         <div className="max-w-md mx-auto px-4 py-16">
           <div className="driver-card text-center">
@@ -293,7 +293,7 @@ export default function WorkPage() {
         : null;
 
     return (
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <Header />
         <main className="max-w-3xl mx-auto px-4 py-8">
           {locationDenied && (
@@ -394,7 +394,7 @@ export default function WorkPage() {
 
   // ----- 2. Idle: availability toggle + request queue -----
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Header />
       <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">

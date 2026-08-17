@@ -79,7 +79,7 @@ export default function SignupPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-cover bg-center text-white flex items-center justify-center px-4 py-10" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="w-full max-w-md">
         <Link href="/" className="block text-center text-2xl font-extrabold tracking-tight mb-8">
           chacha<span className="text-emerald-400">ride</span>

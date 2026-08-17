@@ -59,7 +59,7 @@ export default function HistoryPage() {
 
   if (loading || !user || user.role !== 'driver') {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <FaSpinner className="animate-spin text-emerald-400 text-3xl" />
       </div>
     );
@@ -74,7 +74,7 @@ export default function HistoryPage() {
   const rides = data?.rides || [];
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.93)), url(/images/hero-driver.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Header />
       <main className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Earnings</h1>
