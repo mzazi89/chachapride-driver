@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import InstallBanner from './InstallBanner';
+import InstallAppButton from './InstallAppButton';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -40,6 +41,7 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
           <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
+          <InstallAppButton variant="dark" />
           <button
             onClick={handleLogout}
             className="text-sm text-slate-400 hover:text-white transition-colors"
@@ -62,14 +64,17 @@ export default function Header() {
           <Link href="/" className={linkClass('/')} onClick={() => setOpen(false)}>Work</Link>
           <Link href="/history" className={linkClass('/history')} onClick={() => setOpen(false)}>History</Link>
           <Link href="/settlements" className={linkClass('/settlements')} onClick={() => setOpen(false)}>Deposits</Link>
-          <div className="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between">
+          <div className="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
             <Link href="/profile" className="text-sm text-slate-300 font-medium hover:text-white transition-colors">{firstName}</Link>
-            <button
-              onClick={() => { setOpen(false); handleLogout(); }}
-              className="text-sm text-slate-400 hover:text-white transition-colors"
-            >
-              Log out
-            </button>
+            <div className="flex items-center gap-2">
+              <InstallAppButton variant="dark" />
+              <button
+                onClick={() => { setOpen(false); handleLogout(); }}
+                className="text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                Log out
+              </button>
+            </div>
           </div>
         </div>
       )}
