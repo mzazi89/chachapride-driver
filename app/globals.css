@@ -82,3 +82,32 @@
 .driver-btn-secondary {
   @apply w-full bg-slate-700 text-slate-200 font-bold py-3.5 rounded-xl hover:bg-slate-600 active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
+/* ---- Incoming ride request (phone ring) ---- */
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); transform: scale(1); }
+  50% { transform: scale(1.06); }
+  70% { box-shadow: 0 0 0 26px rgba(16, 185, 129, 0); transform: scale(1); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+}
+
+@keyframes ring-shake {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(18deg); }
+  20% { transform: rotate(-16deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-12deg); }
+  50% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  70% { transform: rotate(4deg); }
+  80% { transform: rotate(-2deg); }
+}
+
+.ringing-phone {
+  animation: ring-pulse 1.1s ease-out infinite, ring-shake 0.6s ease-in-out infinite;
+}
+
+.ring-overlay {
+  background: radial-gradient(circle at 50% 35%, rgba(16, 185, 129, 0.16), rgba(2, 6, 23, 0.97) 60%);
+  backdrop-filter: blur(4px);
+}

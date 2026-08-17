@@ -10,11 +10,13 @@ export async function GET() {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, user_id, pickup, destination, pickup_lat, pickup_lng, destination_lat, destination_lng,
-              ride_type, price, status, created_at
-       FROM rides
-       WHERE driver_id = $1 AND status = ANY($2)
-       ORDER BY created_at DESC
+      `SELECT r.id, r.user_id, r.pickup, r.destination, r.pickup_lat, r.pickup_lng,
+              r.destination_lat, r.destination_lng, r.ride_type, r.price, r.status, r.created_at,
+              u.name AS rider_name, u.phone AS rider_phone
+       FROM rides r
+       LEFT JOIN users u ON u.id = r.user_id
+       WHERE r.driver_id = $1 AND r.status = ANY($2)
+       ORDER BY r.created_at DESC
        LIMIT 1`,
       [user.id, ACTIVE_STATUSES]
     );

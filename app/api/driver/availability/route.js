@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../../lib/db';
 import { guardDriver } from '../../../../lib/guard';
-import { dispatchRide } from '../../../../lib/dispatch';
 
 export async function POST(request) {
   const { user, response } = await guardDriver();
@@ -24,18 +23,8 @@ export async function POST(request) {
       'UPDATE drivers SET status = $1 WHERE user_id = $2 RETURNING status',
       [status, user.id]
     );
-    // Going online may match a waiting ride to this driver right away
-    if (status === 'available') {
-      const { rows: pending } = await pool.query(
-        `SELECT id FROM rides WHERE status = 'requested' AND driver_id IS NULL ORDER BY created_at ASC LIMIT 1`
-      );
-      if (pending.length > 0) {
-        const assignment = await dispatchRide(pending[0].id);
-        if (assignment) {
-          return NextResponse.json({ status: rows[0].status, assignment });
-        }
-      }
-    }
+    // New requests are announced to nearby online drivers by the driver app's
+    // ring notification — the driver accepts from the incoming call screen.
     return NextResponse.json({ status: rows[0].status });
   } catch (err) {
     console.error('[driver availability] database error:', err.message);

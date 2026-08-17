@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../../../../lib/db';
 import { guardDriver } from '../../../../../../lib/guard';
-import { dispatchPendingRides } from '../../../../../../lib/dispatch';
 
 const TRANSITIONS = {
   accepted: 'en_route',
@@ -58,10 +57,7 @@ export async function POST(request, { params }) {
         }
       }
       await client.query('COMMIT');
-      // The freed driver can now take a waiting ride
-      if (nextStatus === 'completed') {
-        await dispatchPendingRides();
-      }
+      // New requests reach the freed driver via the incoming-call ring notification.
       return NextResponse.json({ ride: { id, status: nextStatus } });
     } catch (err) {
       await client.query('ROLLBACK');

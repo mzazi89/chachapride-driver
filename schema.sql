@@ -81,10 +81,20 @@ CREATE TABLE IF NOT EXISTS cash_settlements (
 CREATE INDEX IF NOT EXISTS idx_cash_settlements_driver ON cash_settlements (driver_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_cash_settlements_status ON cash_settlements (status);
 
--- Driver live location (used for auto-dispatch)
+-- Driver live location (used to find nearby drivers / nearby ride requests)
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
 ALTER TABLE drivers ADD COLUMN IF NOT EXISTS location_updated_at TIMESTAMPTZ;
+
+-- Rides a driver declined — they are hidden from that driver's ring notifications
+CREATE TABLE IF NOT EXISTS ride_declines (
+  driver_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ride_id UUID NOT NULL REFERENCES rides(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (driver_id, ride_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ride_declines_ride ON ride_declines (ride_id);
 
 -- Ride types (owner-managed; seeded from lib defaults, idempotent)
 CREATE TABLE IF NOT EXISTS ride_types (
