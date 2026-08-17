@@ -11,6 +11,10 @@ const isIOS = () => {
   );
 };
 
+const isStandalone = () =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
+
 /**
  * "Install app" button that works on every device:
  * - Chrome/Edge/Android: uses the native beforeinstallprompt
@@ -41,13 +45,23 @@ export default function InstallAppButton({ appName = 'chachapride Driver', varia
   if (loading || !user) return null;
 
   const handleClick = async () => {
-    if (deferred) {
-      deferred.prompt();
-      await deferred.userChoice;
-      setDeferred(null);
-    } else {
-      setShowModal(true);
+    if (isStandalone()) {
+      setShowModal(true); // already installed — modal confirms it
+      return;
     }
+    if (deferred) {
+      try {
+        await Promise.race([
+          deferred.prompt(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000)),
+        ]);
+        setDeferred(null);
+      } catch {
+        setShowModal(true); // prompt blocked — show manual steps instead
+      }
+      return;
+    }
+    setShowModal(true);
   };
 
   const btnClass =
@@ -85,7 +99,12 @@ export default function InstallAppButton({ appName = 'chachapride Driver', varia
               </button>
             </div>
 
-            {isIOS() ? (
+            {isStandalone() ? (
+              <p className="text-sm text-slate-300">
+                {appName} is already installed on this device — look for its icon on your home
+                screen.
+              </p>
+            ) : isIOS() ? (
               <ol className="space-y-3 text-sm text-slate-300 list-decimal list-inside">
                 <li>
                   Tap the <b>Share</b> button (square with an arrow) in the browser toolbar.

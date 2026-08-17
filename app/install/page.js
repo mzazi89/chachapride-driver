@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { FaDownload, FaCheckCircle, FaTimes } from 'react-icons/fa';
+import { FaDownload, FaCheckCircle, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
 
 const isIOS = () =>
   typeof navigator !== 'undefined' &&
@@ -14,8 +14,11 @@ const isStandalone = () =>
 
 export default function InstallPage() {
   const deferredRef = useRef(null);
+  const stepsRef = useRef(null);
   const [deferred, setDeferred] = useState(null);
   const [installed, setInstalled] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     const onPrompt = (e) => {
@@ -30,37 +33,35 @@ export default function InstallPage() {
     window.addEventListener('appinstalled', onInstalled);
     checkInstalled();
 
-    // Best-effort auto prompt shortly after the page opens — the browser may
-    // still require a tap, in which case the Install button below is used.
-    const t = setTimeout(async () => {
-      const ev = deferredRef.current;
-      if (ev && !isStandalone()) {
-        try {
-          await ev.prompt();
-          deferredRef.current = null;
-          setDeferred(null);
-        } catch {
-          // ignore — user can tap the Install button instead
-        }
-      }
-    }, 800);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', onPrompt);
       window.removeEventListener('appinstalled', onInstalled);
-      clearTimeout(t);
     };
   }, []);
 
+  // Only prompt inside a real user tap — browsers ignore/consume prompts fired
+  // without one. If no prompt event is available, guide the user manually.
   const installNow = async () => {
     const ev = deferredRef.current;
-    if (!ev) return;
+    setBusy(true);
     try {
-      await ev.prompt();
-      deferredRef.current = null;
-      setDeferred(null);
+      if (ev) {
+        await Promise.race([
+          ev.prompt(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000)),
+        ]);
+        deferredRef.current = null;
+        setDeferred(null);
+      } else {
+        throw new Error('no-prompt');
+      }
     } catch {
-      // ignore
+      setManual(true);
+      setTimeout(() => {
+        stepsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -83,19 +84,29 @@ export default function InstallPage() {
           ) : (
             <button
               onClick={installNow}
-              className="driver-btn-primary flex items-center justify-center gap-2 mb-6"
+              disabled={busy}
+              className="driver-btn-primary flex items-center justify-center gap-2 mb-4"
             >
-              <FaDownload /> Install now
+              <FaDownload /> {busy ? 'Please wait...' : 'Install now'}
             </button>
           )}
 
-          {!installed && deferred && !isIOS() && (
-            <p className="text-xs text-slate-500 mb-6">
-              The install prompt may also appear in your browser&apos;s address bar.
-            </p>
+          {manual && (
+            <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm flex items-start gap-2 text-left">
+              <FaExclamationTriangle className="mt-0.5 shrink-0" />
+              <span>
+                Your browser didn&apos;t show a one-tap prompt — that&apos;s normal on some
+                devices. Follow the steps below to add the app to your home screen.
+              </span>
+            </div>
           )}
 
-          <div className="text-left bg-slate-800/70 border border-slate-700/60 rounded-2xl p-5">
+          <div
+            ref={stepsRef}
+            className={`text-left bg-slate-800/70 border border-slate-700/60 rounded-2xl p-5 transition ${
+              manual ? 'ring-2 ring-amber-400' : ''
+            }`}
+          >
             <h2 className="text-sm font-bold mb-3 text-white">
               {isIOS() ? 'Install on iPhone / iPad' : 'Install on your device'}
             </h2>
