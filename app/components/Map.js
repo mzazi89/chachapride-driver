@@ -11,19 +11,27 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import GoogleMutant from 'leaflet.gridlayer.googlemutant/src/Leaflet.GoogleMutant.mjs';
 import { useRide } from '../context/RideContext';
 import { reverseGeocode } from '../../lib/geocode';
+
+// Official Google Maps requires NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.
+// Without it the app falls back to the Esri layers below.
+const GOOGLE_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const USE_GOOGLE = Boolean(GOOGLE_KEY);
 
 const LAYERS = {
   streets: {
     name: 'Map',
-    // Esri World Street Map — street + place names
+    google: 'roadmap',
+    // Esri World Street Map — street + place names (fallback without key)
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; <a href="https://www.esri.com">Esri</a>',
   },
   satellite: {
     name: 'Satellite',
-    // Esri satellite imagery + reference labels/roads overlays (reliable, no API key)
+    google: 'hybrid',
+    // Esri satellite imagery + reference labels/roads overlays (fallback without key)
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     overlays: [
       'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
@@ -33,10 +41,54 @@ const LAYERS = {
   },
   terrain: {
     name: 'Terrain',
+    google: 'terrain',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
     attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
   },
 };
+
+// Renders a real Google Maps basemap (via the official Google Maps JS API)
+// inside the Leaflet map. Type: 'roadmap' | 'satellite' | 'hybrid' | 'terrain'.
+function GoogleLayer({ type }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!USE_GOOGLE) return;
+    let layer = null;
+    let cancelled = false;
+
+    const ensureApi = () =>
+      new Promise((resolve) => {
+        if (window.google && window.google.maps && window.google.maps.Map) return resolve(true);
+        const existing = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(true));
+          existing.addEventListener('error', () => resolve(false));
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_KEY}`;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve(true);
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+      });
+
+    ensureApi().then((ok) => {
+      if (cancelled || !ok) return;
+      layer = new GoogleMutant({ type });
+      map.addLayer(layer);
+    });
+
+    return () => {
+      cancelled = true;
+      if (layer) map.removeLayer(layer);
+    };
+  }, [map, type]);
+
+  return null;
+}
 
 const pickupIcon = L.divIcon({
   className: '',
@@ -188,10 +240,16 @@ export default function Map({
       scrollWheelZoom
       className="h-full w-full z-0"
     >
-      <TileLayer attribution={tile.attribution} url={tile.url} />
-      {(tile.overlays || []).map((u) => (
-        <TileLayer key={u} attribution={tile.attribution} url={u} />
-      ))}
+      {USE_GOOGLE ? (
+        <GoogleLayer type={LAYERS[layer].google} />
+      ) : (
+        <>
+          <TileLayer attribution={tile.attribution} url={tile.url} />
+          {(tile.overlays || []).map((u) => (
+            <TileLayer key={u} attribution={tile.attribution} url={u} />
+          ))}
+        </>
+      )}
       {pickupCoords && (
         <Marker position={[pickupCoords.lat, pickupCoords.lng]} icon={pickupIcon} />
       )}
