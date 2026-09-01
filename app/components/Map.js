@@ -184,7 +184,7 @@ export default function Map({
   return (
     <MapContainer
       center={[-1.396, 36.7521]}
-      zoom={12}
+      zoom={15}
       scrollWheelZoom
       className="h-full w-full z-0"
     >
@@ -213,7 +213,7 @@ export default function Map({
       )}
       <RouteLayer from={pickupCoords} to={destinationCoords} />
       {interactive && <ClickHandler />}
-      <MapFollower position={followPos} zoom={driverLocation ? 14 : 15} />
+      <MapFollower position={followPos} zoom={16} />
       <LayerControl layer={layer} onSelect={setLayer} />
     </MapContainer>
   );
