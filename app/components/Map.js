@@ -17,19 +17,24 @@ import { reverseGeocode } from '../../lib/geocode';
 const LAYERS = {
   streets: {
     name: 'Map',
-    // Esri World Street Map — continuously updated street + place names
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; <a href="https://www.esri.com">Esri</a>',
+    // Google roadmap — street + place names
+    url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    subdomains: 'mt0mt1mt2mt3',
+    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
   },
   satellite: {
     name: 'Satellite',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
+    // Google hybrid — satellite imagery with labels (names everywhere)
+    url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+    subdomains: 'mt0mt1mt2mt3',
+    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
   },
   terrain: {
     name: 'Terrain',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
+    // Google terrain — with labels
+    url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+    subdomains: 'mt0mt1mt2mt3',
+    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
   },
 };
 
@@ -170,7 +175,7 @@ export default function Map({
   const pickupCoords = pOverride ?? ctx.pickupCoords;
   const destinationCoords = dOverride ?? ctx.destinationCoords;
   const { userLocation } = ctx;
-  const [layer, setLayer] = useState('streets');
+  const [layer, setLayer] = useState('satellite');
   const tile = LAYERS[layer];
 
   // Center the map on the driver while on a trip, otherwise on the user
@@ -183,7 +188,7 @@ export default function Map({
       scrollWheelZoom
       className="h-full w-full z-0"
     >
-      <TileLayer attribution={tile.attribution} url={tile.url} />
+      <TileLayer attribution={tile.attribution} url={tile.url} subdomains={tile.subdomains} />
       {pickupCoords && (
         <Marker position={[pickupCoords.lat, pickupCoords.lng]} icon={pickupIcon} />
       )}
