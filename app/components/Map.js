@@ -17,24 +17,24 @@ import { reverseGeocode } from '../../lib/geocode';
 const LAYERS = {
   streets: {
     name: 'Map',
-    // Google roadmap — street + place names
-    url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-    subdomains: 'mt0mt1mt2mt3',
-    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
+    // Esri World Street Map — street + place names
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; <a href="https://www.esri.com">Esri</a>',
   },
   satellite: {
     name: 'Satellite',
-    // Google hybrid — satellite imagery with labels (names everywhere)
-    url: 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
-    subdomains: 'mt0mt1mt2mt3',
-    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
+    // Esri satellite imagery + reference labels/roads overlays (reliable, no API key)
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    overlays: [
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+    ],
+    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
   },
   terrain: {
     name: 'Terrain',
-    // Google terrain — with labels
-    url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
-    subdomains: 'mt0mt1mt2mt3',
-    attribution: '&copy; <a href="https://maps.google.com">Google</a>',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a>',
   },
 };
 
@@ -188,7 +188,10 @@ export default function Map({
       scrollWheelZoom
       className="h-full w-full z-0"
     >
-      <TileLayer attribution={tile.attribution} url={tile.url} subdomains={tile.subdomains} />
+      <TileLayer attribution={tile.attribution} url={tile.url} />
+      {(tile.overlays || []).map((u) => (
+        <TileLayer key={u} attribution={tile.attribution} url={u} />
+      ))}
       {pickupCoords && (
         <Marker position={[pickupCoords.lat, pickupCoords.lng]} icon={pickupIcon} />
       )}
